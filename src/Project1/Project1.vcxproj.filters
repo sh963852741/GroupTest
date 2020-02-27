@@ -24,12 +24,18 @@
     <ClCompile Include="FinderPatternFinder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="slicer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="detector.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FinderPatternFinder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="slicer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
