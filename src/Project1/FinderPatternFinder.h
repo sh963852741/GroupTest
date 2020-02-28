@@ -32,6 +32,7 @@ struct FinderPatternInfo //结构体，用来存储FinderPattern的信息
 	FinderPattern topRight;
 	FinderPatternInfo(vector<FinderPattern>patternCenters)
 		:bottomLeft(patternCenters[0]), topLeft(patternCenters[1]), topRight(patternCenters[2]) {};
+	FinderPatternInfo() {};
 };
 
 class FinderPatternFinder
