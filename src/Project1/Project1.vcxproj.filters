@@ -27,6 +27,9 @@
     <ClCompile Include="slicer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="VedioGenerator.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="detector.h">
@@ -36,6 +39,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="slicer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="VedioGenerator.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

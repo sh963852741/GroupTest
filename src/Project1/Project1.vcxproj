@@ -147,12 +147,14 @@
     <ClCompile Include="detector.cpp" />
     <ClCompile Include="FinderPatternFinder.cpp" />
     <ClCompile Include="slicer.cpp" />
+    <ClCompile Include="VedioGenerator.cpp" />
     <ClCompile Include="源.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="detector.h" />
     <ClInclude Include="FinderPatternFinder.h" />
     <ClInclude Include="slicer.h" />
+    <ClInclude Include="VedioGenerator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
