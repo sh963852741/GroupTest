@@ -98,7 +98,6 @@ void DataTranslator::DateTranslate(unsigned short**tes)
 	unsigned char* test = new unsigned char[ByteNum];//单张图片的数据
 	unsigned char* DataCheckArray = new unsigned char[20];
 	int CheckArrayIndex = 0;
-	ByteNum = 20;
 	int BitNums = ByteNum * 8;
 	int SingleDataCodes;//每一组数据码长度；
 	int SingleErrorCodes;//每一组纠错码长度
