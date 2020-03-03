@@ -18,9 +18,6 @@
     <ClCompile Include="源.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="detector.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="FinderPatternFinder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -30,11 +27,14 @@
     <ClCompile Include="VedioGenerator.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AlignPatternFinder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Detector.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="detector.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="FinderPatternFinder.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -42,6 +42,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="VedioGenerator.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AlignPatternFinder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Detector.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

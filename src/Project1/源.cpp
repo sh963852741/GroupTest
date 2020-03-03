@@ -1,20 +1,25 @@
-#include <cstdio>
+ï»¿#include <cstdio>
 #include "detector.h"
-#include "opencv2/opencv.hpp" //opencv µÄÍ·ÎÄ¼ş
+#include "opencv2/opencv.hpp" //opencv çš„å¤´æ–‡ä»¶
 #include "slicer.h"
 #include "VedioGenerator.h"
 using namespace std;
 
-using namespace cv; //opencv µÄÃüÃû¿Õ¼ä
+using namespace cv; //opencv çš„å‘½åç©ºé—´
 
 
 int main()
 {
+    Mat img = imread("C:\\Users\\yuyua\\Desktop\\test.jpg");  
+    Mat imgGray, res;
+    cvtColor(img, imgGray, COLOR_BGR2GRAY);
+    double x = threshold(imgGray, res, 128, 255, THRESH_BINARY_INV);
+    Detector d(res);
+    d.Detect();
+    d.GetBinaryData(192, 108);
+    //VedioGenerator a;
+    //a.Read();
+    //a.Draw();
 
-    VedioGenerator a;
-    a.Read();
-    a.Draw();
-    
-    
     return 0;
 }
