@@ -144,14 +144,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="detector.cpp" />
+    <ClCompile Include="AlignPatternFinder.cpp" />
+    <ClCompile Include="Detector.cpp" />
     <ClCompile Include="FinderPatternFinder.cpp" />
     <ClCompile Include="slicer.cpp" />
     <ClCompile Include="VedioGenerator.cpp" />
     <ClCompile Include="源.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="detector.h" />
+    <ClInclude Include="AlignPatternFinder.h" />
+    <ClInclude Include="Detector.h" />
     <ClInclude Include="FinderPatternFinder.h" />
     <ClInclude Include="slicer.h" />
     <ClInclude Include="VedioGenerator.h" />

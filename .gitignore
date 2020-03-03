@@ -1,4 +1,2 @@
-
-Debug/
-*.ipch
-/src/.vs/
+debug/
+.vs/
