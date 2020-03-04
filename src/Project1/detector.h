@@ -19,7 +19,8 @@ private:
 
 	double CalculateModuleSize();
 	int ProcessFinderPatternInfo(FinderPatternInfo info); //返回值是暂时的
-	Point2d CalcPosition(int width, int height, int x, int y);
-	AlignmentPattern FindAlignmentInRegion(double moduleSize, int estAlignmentX, int estAlignmentY, int allowanceFactor);
+	Point2d CalcPosition(int moduleSize, int x, int y);
+	bool FindAlignmentInRegion(double moduleSize, int estAlignmentX, int estAlignmentY, int allowanceFactor);
+	void Rectify(int moduleSize, int width, int height);
 	//~Detector();
 };

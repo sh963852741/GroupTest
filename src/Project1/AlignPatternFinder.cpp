@@ -1,7 +1,7 @@
 #include "AlignPatternFinder.h"
 
 AlignmentPatternFinder::AlignmentPatternFinder(){};
-AlignmentPattern AlignmentPatternFinder::Find(Mat image, int startX, int startY, int width, int height, double moduleSize)
+AlignmentPattern* AlignmentPatternFinder::Find(Mat image, int startX, int startY, int width, int height, double moduleSize)
 {
 	this->image = image;
 	this->moduleSize = moduleSize;
@@ -39,7 +39,7 @@ AlignmentPattern AlignmentPatternFinder::Find(Mat image, int startX, int startY,
 							AlignmentPattern* confirmed = HandlePossibleCenter(stateCount, i, j);
 							if (confirmed != nullptr)
 							{
-								return *confirmed;
+								return confirmed;
 							}
 						}
 						stateCount[0] = stateCount[2];
@@ -68,17 +68,17 @@ AlignmentPattern AlignmentPatternFinder::Find(Mat image, int startX, int startY,
 			AlignmentPattern* confirmed = HandlePossibleCenter(stateCount, i, maxJ);
 			if (confirmed != nullptr)
 			{
-				return *confirmed;
+				return confirmed;
 			}
 		}
 	}
 
 	if (!(possibleCenters.size() == 0))
 	{
-		return  possibleCenters[0];
+		return &possibleCenters[0];
 	}
 
-	throw "Couldn't find enough alignment patterns";
+	return nullptr;
 }
 
 AlignmentPattern* AlignmentPatternFinder::HandlePossibleCenter(int stateCount[], int i, int j)
