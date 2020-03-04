@@ -6,16 +6,15 @@ using namespace std;
 
 struct AlignmentPattern
 {
-	double x;
-	double y;
+	Point2d position;
 	int count;
 	double estimatedModuleSize;
 	AlignmentPattern():count(1) {};
 	AlignmentPattern(double posX, double posY, double estimatedModuleSize)
-		:count(1), x(posX), y(posY), estimatedModuleSize(estimatedModuleSize) {};
+		:count(1), position(posX, posY), estimatedModuleSize(estimatedModuleSize) {};
 	bool AboutEquals(double moduleSize, double i, double j)
 	{
-		if (abs(i - y) <= moduleSize && abs(j - x) <= moduleSize)
+		if (abs(i - position.y) <= moduleSize && abs(j - position.x) <= moduleSize)
 		{
 			double moduleSizeDiff = abs(moduleSize - estimatedModuleSize);
 			return moduleSizeDiff <= 1.0 || moduleSizeDiff / estimatedModuleSize <= 1.0;
@@ -28,7 +27,7 @@ class AlignmentPatternFinder
 {
 public:
 	AlignmentPatternFinder();
-	AlignmentPattern Find(Mat image, int startX, int startY, int width, int height, double moduleSize);
+	AlignmentPattern* Find(Mat image, int startX, int startY, int width, int height, double moduleSize);
 private:
 	Mat image;
 	int crossCheckStateCount[5] = { 0,0,0,0,0 };

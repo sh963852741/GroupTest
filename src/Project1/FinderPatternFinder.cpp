@@ -4,8 +4,8 @@ double FinderPatternFinder::average;
 
 double Distance(FinderPattern pattern1, FinderPattern pattern2)
 {
-	double xDiff = pattern1.x - pattern2.x;
-	double yDiff = pattern1.y - pattern2.y;
+	double xDiff = pattern1.position.x - pattern2.position.x;
+	double yDiff = pattern1.position.y - pattern2.position.y;
 	return sqrt((xDiff * xDiff + yDiff * yDiff));
 }
 bool FinderPatternFinder::FinderPatternSort1(FinderPattern center1, FinderPattern center2)
@@ -46,7 +46,7 @@ void FinderPatternFinder::OrderBestPatterns(vector<FinderPattern> &patterns)
 		pointC = patterns[1];
 	}
 
-	if ((((pointC.x - pointB.x) * (pointA.y - pointB.y)) - ((pointC.y - pointB.y) * (pointA.x - pointB.x))) < 0.0)
+	if ((((pointC.position.x - pointB.position.x) * (pointA.position.y - pointB.position.y)) - ((pointC.position.y - pointB.position.y) * (pointA.position.x - pointB.position.x))) < 0.0)
 	{
 		FinderPattern temp = pointA;
 		pointA = pointC;
@@ -363,7 +363,7 @@ int FinderPatternFinder::FindRowSkip()
 			else
 			{
 				hasSkipped = true;
-				return cvFloor((abs(firstConfirmedCenter->x - center.x) - abs(firstConfirmedCenter->y - center.y)) / 2);
+				return cvFloor((abs(firstConfirmedCenter->position.x - center.position.x) - abs(firstConfirmedCenter->position.y - center.position.y)) / 2);
 			}
 		}
 	}

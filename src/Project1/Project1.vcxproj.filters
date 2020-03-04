@@ -33,6 +33,9 @@
     <ClCompile Include="Detector.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="DataTranslation.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FinderPatternFinder.h">
@@ -48,6 +51,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Detector.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="DataTranslation.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

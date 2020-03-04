@@ -5,9 +5,16 @@ int Detector::Detect()
 {
 	finderPatternInfo = finder1.FindFinderPattern(image);
 	double moduleSize = CalculateModuleSize();
-	double estAlignmentX = finderPatternInfo.topRight.x - finderPatternInfo.topLeft.x + finderPatternInfo.bottomLeft.x;
-	double estAlignmentY = finderPatternInfo.topRight.y - finderPatternInfo.topLeft.y + finderPatternInfo.bottomLeft.y;
-	alignmentPattern = FindAlignmentInRegion(moduleSize, estAlignmentX, estAlignmentY, 4);
+	double estAlignmentX = finderPatternInfo.topRight.position.x - finderPatternInfo.topLeft.position.x + finderPatternInfo.bottomLeft.position.x;
+	double estAlignmentY = finderPatternInfo.topRight.position.y - finderPatternInfo.topLeft.position.y + finderPatternInfo.bottomLeft.position.y;
+	int allowanceFactor = 4;
+	while(allowanceFactor<=16)
+	{
+		if (FindAlignmentInRegion(moduleSize, estAlignmentX, estAlignmentY, allowanceFactor))break;
+		allowanceFactor <<= 1;
+	}
+	if (allowanceFactor == 32)throw "Couldn't find enough alignment patterns";
+	Rectify(10, 192, 108);
 	return ProcessFinderPatternInfo(finderPatternInfo);
 }
 
@@ -22,7 +29,7 @@ unsigned short** Detector::GetBinaryData(int width, int height)
 	{
 		for (int j = 0; j < width; ++j)
 		{
-			Point2d point = CalcPosition(width, height, j, i);
+			Point2d point = CalcPosition(10, j, i);
 			res[i][j] = image.at<uchar>(point) ? 1 : 0;
 			cout << res[i][j];
 		}
@@ -33,8 +40,8 @@ unsigned short** Detector::GetBinaryData(int width, int height)
 
 double Detector::CalculateModuleSize()
 {
-	double size1 = (finderPatternInfo.topRight.x - finderPatternInfo.topLeft.x) / (192 - 7);
-	double size2 = (finderPatternInfo.bottomLeft.y-finderPatternInfo.topLeft.y) / (108 - 7);
+	double size1 = (finderPatternInfo.topRight.position.x - finderPatternInfo.topLeft.position.x) / (192 - 7);
+	double size2 = (finderPatternInfo.bottomLeft.position.y-finderPatternInfo.topLeft.position.y) / (108 - 7);
 	return (size1 + size2) / 2.0;
 }
 
@@ -44,16 +51,12 @@ int Detector::ProcessFinderPatternInfo(FinderPatternInfo info)
 	return 0;
 }
 
-Point2d Detector::CalcPosition(int width,int height, int x, int y)
+Point2d Detector::CalcPosition(int moduleSize, int x, int y)
 {
-	
-	dx = (finderPatternInfo.topRight.x - finderPatternInfo.topLeft.x) / (width - 7);
-	dy = (finderPatternInfo.bottomLeft.y - finderPatternInfo.topLeft.y) / (height - 7);
-
-	return Point2d(finderPatternInfo.topLeft.x + (x - 3) * dx, finderPatternInfo.topLeft.y + (y - 3) * dy);
+	return Point2d(x * moduleSize + moduleSize / 2, y * moduleSize + moduleSize / 2);
 }
 
-AlignmentPattern Detector::FindAlignmentInRegion(double overallEstModuleSize, int estAlignmentX, int estAlignmentY, int allowanceFactor)
+bool Detector::FindAlignmentInRegion(double overallEstModuleSize, int estAlignmentX, int estAlignmentY, int allowanceFactor)
 {
 	int allowance = cvFloor(allowanceFactor * overallEstModuleSize);
 	int alignmentAreaLeftX = max(0, estAlignmentX - allowance);
@@ -66,5 +69,29 @@ AlignmentPattern Detector::FindAlignmentInRegion(double overallEstModuleSize, in
 	int alignmentAreaTopY = max(0, estAlignmentY - allowance);
 	int alignmentAreaBottomY = min(image.rows - 1, estAlignmentY + allowance);
 
-	return alignmentFinder.Find(image, alignmentAreaLeftX, alignmentAreaTopY, alignmentAreaRightX - alignmentAreaLeftX, alignmentAreaBottomY - alignmentAreaTopY, overallEstModuleSize);
+	void* p=alignmentFinder.Find(image, alignmentAreaLeftX, alignmentAreaTopY, alignmentAreaRightX - alignmentAreaLeftX, alignmentAreaBottomY - alignmentAreaTopY, overallEstModuleSize);
+	if (p)
+	{
+		alignmentPattern = *(AlignmentPattern*)p;
+		return true;
+	}
+	else return false;
+}
+
+void Detector::Rectify(int moduleSize, int width, int height)
+{
+	vector<Point2f>dst, src;
+
+	dst.push_back(Point2d(moduleSize * 3.5, moduleSize * 3.5)); // TopLeft
+	dst.push_back(Point2d(moduleSize * (width - 3.5), moduleSize * 3.5)); // TopRight
+	dst.push_back(Point2d(moduleSize * 3.5, moduleSize * (height - 3.5))); // BottomLeft
+	dst.push_back(Point2d(moduleSize * (width - 3.5), moduleSize * (height - 3.5))); // BottomRight
+
+	src.push_back(finderPatternInfo.topLeft.position);
+	src.push_back(finderPatternInfo.topRight.position);
+	src.push_back(finderPatternInfo.bottomLeft.position);
+	src.push_back(alignmentPattern.position);
+
+	Mat transformMatrix = getPerspectiveTransform(src, dst);
+	warpPerspective(image, image, transformMatrix, Size(1920, 1080));
 }
