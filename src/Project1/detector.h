@@ -6,21 +6,19 @@ class Detector
 {
 public:
 	Detector(Mat image);
-	int Detect();
-	unsigned short** GetBinaryData(int width, int height);
+	bool Detect();
+	unsigned short** GetBinaryData(int width, int height,int moduleSize);
 private:
 	Mat image;
 	FinderPatternFinder finder1;
 	AlignmentPatternFinder alignmentFinder;
 	FinderPatternInfo finderPatternInfo;
 	AlignmentPattern alignmentPattern;
-	double dx;
-	double dy;
+	double overallEstModuleSize;
 
-	double CalculateModuleSize();
-	int ProcessFinderPatternInfo(FinderPatternInfo info); //返回值是暂时的
+	void CalculateModuleSize();
 	Point2d CalcPosition(int moduleSize, int x, int y);
-	bool FindAlignmentInRegion(double moduleSize, int estAlignmentX, int estAlignmentY, int allowanceFactor);
+	bool FindAlignmentInRegion(int estAlignmentX, int estAlignmentY, int allowanceFactor);
 	void Rectify(int moduleSize, int width, int height);
 	//~Detector();
 };

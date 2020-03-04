@@ -16,7 +16,7 @@ int main()
     double x = threshold(imgGray, res, 128, 255, THRESH_BINARY_INV);
     Detector d(res);
     d.Detect();
-    d.GetBinaryData(192, 108);
+    d.GetBinaryData(192, 108, 10);
     //VedioGenerator a;
     //a.Read();
     //a.Draw();
