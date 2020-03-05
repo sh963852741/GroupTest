@@ -45,7 +45,6 @@ private:
 	const int MAX_MODULES = 57;
 	const int INTEGER_MATH_SHIFT = 8;
 	const int CENTER_QUORUM = 2;
-	int* resultPointCallback = nullptr;
 
 
 	static bool FinderPatternSort1(FinderPattern center1, FinderPattern center2);
@@ -60,6 +59,6 @@ private:
 	double CrossCheckVertical(int startI, int centerJ, int maxCount, int originalStateCountTotal);
 	int FindRowSkip();
 public:
-	FinderPatternInfo FindFinderPattern(Mat image); //输入二值化后的图像，返回FinderPattern的信息
+	bool FindFinderPattern(Mat image, FinderPatternInfo& finderPatternInfo); //输入二值化后的图像，返回FinderPattern的信息
 	double static average;
 };

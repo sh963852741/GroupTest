@@ -3,7 +3,7 @@
 Detector::Detector(Mat image) :image(image) {};
 bool Detector::Detect()
 {
-	finderPatternInfo = finder1.FindFinderPattern(image);
+	if(!finder1.FindFinderPattern(image, finderPatternInfo))return false;
 	CalculateModuleSize();
 	double estAlignmentX = finderPatternInfo.topRight.position.x - finderPatternInfo.topLeft.position.x + finderPatternInfo.bottomLeft.position.x;
 	double estAlignmentY = finderPatternInfo.topRight.position.y - finderPatternInfo.topLeft.position.y + finderPatternInfo.bottomLeft.position.y;
