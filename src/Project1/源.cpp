@@ -2,7 +2,7 @@
 #include "detector.h"
 #include "opencv2/opencv.hpp" //opencv 的头文件
 #include "slicer.h"
-#include "VedioGenerator.h"
+#include "FileToPicture.h"
 using namespace std;
 
 using namespace cv; //opencv 的命名空间
