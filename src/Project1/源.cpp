@@ -10,16 +10,20 @@ using namespace cv; //opencv 的命名空间
 
 int main()
 {
-    Mat img = imread("C:\\Users\\yuyua\\Desktop\\test.jpg");  
     Mat imgGray, res;
-    cvtColor(img, imgGray, COLOR_BGR2GRAY);
-    double x = threshold(imgGray, res, 128, 255, THRESH_BINARY_INV);
-    Detector d(res);
-    d.Detect();
-    d.GetBinaryData(192, 108, 10);
-    //VedioGenerator a;
-    //a.Read();
-    //a.Draw();
+    for (int i = 0; i <= 393; i++)
+    {
+        Mat img = imread("D:\\QR_Code\\QR_Code" + to_string(i) + ".jpg");
+        cvtColor(img, imgGray, COLOR_BGR2GRAY);
+        threshold(imgGray, res, 128, 255, THRESH_BINARY_INV);
+        Detector d(res);
+        if (!d.Detect())throw;
+        // d.GetBinaryData(192, 108, 10);
+    }
+
+    
+    // FileToPicture a;
+    // a.MakePictureSequence();
 
     return 0;
 }

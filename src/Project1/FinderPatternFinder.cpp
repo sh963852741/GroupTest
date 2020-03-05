@@ -12,12 +12,13 @@ bool FinderPatternFinder::FinderPatternSort1(FinderPattern center1, FinderPatter
 {
 	double dA = abs(center2.estimatedModuleSize - average);
 	double dB = abs(center1.estimatedModuleSize - average);
-	return (dA < dB);
+	return (dA > dB);
 }
 bool FinderPatternFinder::FinderPatternSort2(FinderPattern a, FinderPattern b)
 {
-	return a.count > b.count;
+	return a.position.x < b.position.x;
 }
+
 
 void FinderPatternFinder::OrderBestPatterns(vector<FinderPattern> &patterns)
 {
@@ -152,39 +153,18 @@ bool FinderPatternFinder::HandlePossibleCenter(int stateCount[], int i, int j)
 
 vector<FinderPattern> FinderPatternFinder::SelectBestPatterns()
 {
-	int startSize = possibleCenters.size();
-
-	double totalModuleSize = 0.0;
-	double square = 0.0;
-	for (int i = 0; i < startSize; i++)
+	if (possibleCenters.size() > 3) //ÊµÔÚÎÞ·¨ÅÐ¶Ï
 	{
-		double	centerValue = possibleCenters[i].estimatedModuleSize;
-		totalModuleSize += centerValue;
-		square += (centerValue * centerValue);
-	}
-	average = totalModuleSize / startSize;
-	std::sort(possibleCenters.begin(), possibleCenters.end(), FinderPatternSort1); //×¢ÒâÉý½µÐò
-
-	double stdDev = sqrt(square / startSize - average * average);
-	double limit = max(0.2 * average, stdDev);
-
-	for (int i = possibleCenters.size() - 1; i >= 0; i--)
-	{
-		FinderPattern pattern = possibleCenters[i];
-		if (abs(pattern.estimatedModuleSize - average) > limit)
+		std::sort(possibleCenters.begin(), possibleCenters.end(), FinderPatternSort2); //×¢ÒâÉý½µÐò
+		for (int i = possibleCenters.size() - 2; i > 1; i--)
 		{
 			possibleCenters.erase(possibleCenters.begin() + i);
 		}
 	}
-
-	if (possibleCenters.size() > 3)
-	{
-		std::sort(possibleCenters.begin(), possibleCenters.end(), FinderPatternSort2); //×¢ÒâÉý½µÐò
-	}
-	vector<FinderPattern>temp;
-	temp.push_back(possibleCenters[0]);
-	temp.push_back(possibleCenters[1]);
-	temp.push_back(possibleCenters[2]);
+	vector<FinderPattern>temp(3);
+	temp.at(0) = (possibleCenters[0]);
+	temp.at(1) = (possibleCenters[1]);
+	temp.at(2) = (possibleCenters[2]);
 	return temp;
 }
 
@@ -375,7 +355,7 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 
 	bool done = false;
 	int stateCount[5] = { 0,0,0,0,0 };
-	for (int i = iSkip - 1; i < maxI && !done; i += iSkip)
+	for (int i = iSkip - 1; i < maxI; i += iSkip)
 	{
 		stateCount[0] = 0;
 		stateCount[1] = 0;
@@ -411,7 +391,7 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 								}
 								else
 								{
-									int rowSkip = FindRowSkip();
+									int rowSkip = FindRowSkip() / 16 * 9;
 									if (rowSkip > stateCount[2])
 									{
 										i += rowSkip - stateCount[2] - iSkip;
@@ -421,18 +401,13 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 							}
 							else
 							{
-								do
-								{
-									j++;
-								} while (j < maxJ && !image.at<uchar>(i, j));
-								j--;
+								stateCount[0] = stateCount[4];
+								stateCount[1] = 0;
+								stateCount[2] = 0;
+								stateCount[3] = 0;
+								stateCount[4] = 0;
+								currentState = 1;
 							}
-							currentState = 0;
-							stateCount[0] = 0;
-							stateCount[1] = 0;
-							stateCount[2] = 0;
-							stateCount[3] = 0;
-							stateCount[4] = 0;
 						}
 						else
 						{

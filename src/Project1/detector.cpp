@@ -3,7 +3,8 @@
 Detector::Detector(Mat image) :image(image) {};
 bool Detector::Detect()
 {
-	if(!finder1.FindFinderPattern(image, finderPatternInfo))return false;
+	bool x = finder1.FindFinderPattern(image, finderPatternInfo);
+	if (!x)return false;
 	CalculateModuleSize();
 	double estAlignmentX = finderPatternInfo.topRight.position.x - finderPatternInfo.topLeft.position.x + finderPatternInfo.bottomLeft.position.x;
 	double estAlignmentY = finderPatternInfo.topRight.position.y - finderPatternInfo.topLeft.position.y + finderPatternInfo.bottomLeft.position.y;
@@ -30,9 +31,9 @@ unsigned short** Detector::GetBinaryData(int width, int height, int moduleSize)
 		{
 			Point2d point = CalcPosition(moduleSize, j, i);
 			res[i][j] = image.at<uchar>(point) ? 1 : 0;
-			cout << res[i][j];
+			//cout << res[i][j];
 		}
-		cout << '\n';
+		//cout << '\n';
 	}
 	return res;
 }
