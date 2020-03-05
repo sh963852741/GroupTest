@@ -1,6 +1,13 @@
 #include "detector.h"
 
-Detector::Detector(Mat image) :image(image) {};
+Detector::Detector(Mat image, int blockRows, int blockCols, int moduleSize) :image(image), blockRows(blockRows), blockCols(blockCols),moduleSize(moduleSize)
+{
+	res = new char* [blockRows];
+	for (int i = 0; i < blockRows; ++i)
+	{
+		res[i] = new char[blockCols];
+	}
+};
 bool Detector::Detect()
 {
 	bool x = finder1.FindFinderPattern(image, finderPatternInfo);
@@ -17,25 +24,28 @@ bool Detector::Detect()
 	return false;
 }
 
-unsigned short** Detector::GetBinaryData(int width, int height, int moduleSize)
+char** Detector::GetBinaryData()
 {
-	Rectify(moduleSize, width, height);
-	unsigned short** res = new unsigned short* [height];
-	for (int i = 0; i < width; ++i)
+	Rectify(moduleSize, blockCols, blockRows);
+	for (int i = 0; i < blockRows; ++i)
 	{
-		res[i] = new unsigned short[width];
-	}
-	for (int i = 0; i < height; ++i)
-	{
-		for (int j = 0; j < width; ++j)
+		for (int j = 0; j < blockCols; ++j)
 		{
 			Point2d point = CalcPosition(moduleSize, j, i);
 			res[i][j] = image.at<uchar>(point) ? 1 : 0;
-			//cout << res[i][j];
+			// cout << (int)res[i][j];
 		}
-		//cout << '\n';
+		// cout << '\n';
 	}
 	return res;
+}
+
+Detector::~Detector()
+{
+	for (int i = 0; i < blockRows; ++i) {
+		delete[] res[i];
+	}
+	delete[] res;
 }
 
 void Detector::CalculateModuleSize()
