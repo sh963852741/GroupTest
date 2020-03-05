@@ -153,34 +153,27 @@ bool FinderPatternFinder::HandlePossibleCenter(int stateCount[], int i, int j)
 vector<FinderPattern> FinderPatternFinder::SelectBestPatterns()
 {
 	int startSize = possibleCenters.size();
-	if (startSize < 3)
+
+	double totalModuleSize = 0.0;
+	double square = 0.0;
+	for (int i = 0; i < startSize; i++)
 	{
-		throw "Couldn't find enough finder patterns (found \" + startSize + \")";
+		double	centerValue = possibleCenters[i].estimatedModuleSize;
+		totalModuleSize += centerValue;
+		square += (centerValue * centerValue);
 	}
+	average = totalModuleSize / startSize;
+	std::sort(possibleCenters.begin(), possibleCenters.end(), FinderPatternSort1); //×¢ÒâÉý½µÐò
 
-	if (startSize > 3)
+	double stdDev = sqrt(square / startSize - average * average);
+	double limit = max(0.2 * average, stdDev);
+
+	for (int i = possibleCenters.size() - 1; i >= 0; i--)
 	{
-		double totalModuleSize = 0.0;
-		double square = 0.0;
-		for (int i = 0; i < startSize; i++)
+		FinderPattern pattern = possibleCenters[i];
+		if (abs(pattern.estimatedModuleSize - average) > limit)
 		{
-			double	centerValue = possibleCenters[i].estimatedModuleSize;
-			totalModuleSize += centerValue;
-			square += (centerValue * centerValue);
-		}
-		average = totalModuleSize / startSize;
-		std::sort(possibleCenters.begin(), possibleCenters.end(), FinderPatternSort1); //×¢ÒâÉý½µÐò
-
-		double stdDev = sqrt(square / startSize - average * average);
-		double limit = max(0.2 * average, stdDev);
-
-		for (int i = possibleCenters.size() - 1; i >= 0; i--)
-		{
-			FinderPattern pattern = possibleCenters[i];
-			if (abs(pattern.estimatedModuleSize - average) > limit)
-			{
-				possibleCenters.erase(possibleCenters.begin() + i);
-			}
+			possibleCenters.erase(possibleCenters.begin() + i);
 		}
 	}
 
@@ -370,7 +363,7 @@ int FinderPatternFinder::FindRowSkip()
 	return 0;
 }
 
-FinderPatternInfo FinderPatternFinder::FindFinderPattern(Mat image)
+bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finderPatternInfo)
 {
 	bool tryHarder = false;
 	this->image = image;
@@ -475,8 +468,9 @@ FinderPatternInfo FinderPatternFinder::FindFinderPattern(Mat image)
 			}
 		}
 	}
+	if (possibleCenters.size() < 3)return false;
 	vector<FinderPattern>patternInfo = SelectBestPatterns();
 	OrderBestPatterns(patternInfo);
-
-	return FinderPatternInfo(patternInfo);
+	finderPatternInfo = FinderPatternInfo(patternInfo);
+	return true;
 }

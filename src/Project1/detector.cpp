@@ -1,26 +1,25 @@
 #include "detector.h"
 
 Detector::Detector(Mat image) :image(image) {};
-int Detector::Detect()
+bool Detector::Detect()
 {
-	finderPatternInfo = finder1.FindFinderPattern(image);
-	double moduleSize = CalculateModuleSize();
+	if(!finder1.FindFinderPattern(image, finderPatternInfo))return false;
+	CalculateModuleSize();
 	double estAlignmentX = finderPatternInfo.topRight.position.x - finderPatternInfo.topLeft.position.x + finderPatternInfo.bottomLeft.position.x;
 	double estAlignmentY = finderPatternInfo.topRight.position.y - finderPatternInfo.topLeft.position.y + finderPatternInfo.bottomLeft.position.y;
 	int allowanceFactor = 4;
-	while(allowanceFactor<=16)
+	while (allowanceFactor <= 16)
 	{
-		if (FindAlignmentInRegion(moduleSize, estAlignmentX, estAlignmentY, allowanceFactor))break;
+		if (FindAlignmentInRegion(estAlignmentX, estAlignmentY, allowanceFactor))return true;
 		allowanceFactor <<= 1;
 	}
-	if (allowanceFactor == 32)throw "Couldn't find enough alignment patterns";
-	Rectify(10, 192, 108);
-	return ProcessFinderPatternInfo(finderPatternInfo);
+	return false;
 }
 
-unsigned short** Detector::GetBinaryData(int width, int height)
+unsigned short** Detector::GetBinaryData(int width, int height, int moduleSize)
 {
-	unsigned short** res = new unsigned short*[height];
+	Rectify(moduleSize, width, height);
+	unsigned short** res = new unsigned short* [height];
 	for (int i = 0; i < width; ++i)
 	{
 		res[i] = new unsigned short[width];
@@ -29,7 +28,7 @@ unsigned short** Detector::GetBinaryData(int width, int height)
 	{
 		for (int j = 0; j < width; ++j)
 		{
-			Point2d point = CalcPosition(10, j, i);
+			Point2d point = CalcPosition(moduleSize, j, i);
 			res[i][j] = image.at<uchar>(point) ? 1 : 0;
 			cout << res[i][j];
 		}
@@ -38,17 +37,11 @@ unsigned short** Detector::GetBinaryData(int width, int height)
 	return res;
 }
 
-double Detector::CalculateModuleSize()
+void Detector::CalculateModuleSize()
 {
 	double size1 = (finderPatternInfo.topRight.position.x - finderPatternInfo.topLeft.position.x) / (192 - 7);
-	double size2 = (finderPatternInfo.bottomLeft.position.y-finderPatternInfo.topLeft.position.y) / (108 - 7);
-	return (size1 + size2) / 2.0;
-}
-
-int Detector::ProcessFinderPatternInfo(FinderPatternInfo info)
-{
-
-	return 0;
+	double size2 = (finderPatternInfo.bottomLeft.position.y - finderPatternInfo.topLeft.position.y) / (108 - 7);
+	overallEstModuleSize = (size1 + size2) / 2.0;
 }
 
 Point2d Detector::CalcPosition(int moduleSize, int x, int y)
@@ -56,7 +49,7 @@ Point2d Detector::CalcPosition(int moduleSize, int x, int y)
 	return Point2d(x * moduleSize + moduleSize / 2, y * moduleSize + moduleSize / 2);
 }
 
-bool Detector::FindAlignmentInRegion(double overallEstModuleSize, int estAlignmentX, int estAlignmentY, int allowanceFactor)
+bool Detector::FindAlignmentInRegion(int estAlignmentX, int estAlignmentY, int allowanceFactor)
 {
 	int allowance = cvFloor(allowanceFactor * overallEstModuleSize);
 	int alignmentAreaLeftX = max(0, estAlignmentX - allowance);
@@ -69,7 +62,7 @@ bool Detector::FindAlignmentInRegion(double overallEstModuleSize, int estAlignme
 	int alignmentAreaTopY = max(0, estAlignmentY - allowance);
 	int alignmentAreaBottomY = min(image.rows - 1, estAlignmentY + allowance);
 
-	void* p=alignmentFinder.Find(image, alignmentAreaLeftX, alignmentAreaTopY, alignmentAreaRightX - alignmentAreaLeftX, alignmentAreaBottomY - alignmentAreaTopY, overallEstModuleSize);
+	void* p = alignmentFinder.Find(image, alignmentAreaLeftX, alignmentAreaTopY, alignmentAreaRightX - alignmentAreaLeftX, alignmentAreaBottomY - alignmentAreaTopY, overallEstModuleSize);
 	if (p)
 	{
 		alignmentPattern = *(AlignmentPattern*)p;
@@ -93,5 +86,5 @@ void Detector::Rectify(int moduleSize, int width, int height)
 	src.push_back(alignmentPattern.position);
 
 	Mat transformMatrix = getPerspectiveTransform(src, dst);
-	warpPerspective(image, image, transformMatrix, Size(1920, 1080));
+	warpPerspective(image, image, transformMatrix, Size(moduleSize * width, moduleSize * height));
 }
