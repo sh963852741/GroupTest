@@ -6,7 +6,7 @@ void FileToPicture::MakePictureSequence() {
 	errno_t readErr = 0;
 	while (true) {
 		cout << "Please enter the file you want to deliver" << endl
-			<< "use '\\\\' to replace '\\':";
+			<< R"(use '\\' to replace '\':)";
 		cin >> readFile;
 		readErr = fopen_s(&readFp, readFile, "rb");
 		if (readErr == 0) break;
