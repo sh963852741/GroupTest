@@ -148,6 +148,7 @@
     <ClCompile Include="DataTranslation.cpp" />
     <ClCompile Include="Detector.cpp" />
     <ClCompile Include="FileToPicture.cpp" />
+    <ClCompile Include="FileToVedio.cpp" />
     <ClCompile Include="FinderPatternFinder.cpp" />
     <ClCompile Include="slicer.cpp" />
     <ClCompile Include="源.cpp" />
@@ -157,6 +158,7 @@
     <ClInclude Include="DataTranslation.h" />
     <ClInclude Include="Detector.h" />
     <ClInclude Include="FileToPicture.h" />
+    <ClInclude Include="FileToVedio.h" />
     <ClInclude Include="FinderPatternFinder.h" />
     <ClInclude Include="slicer.h" />
   </ItemGroup>

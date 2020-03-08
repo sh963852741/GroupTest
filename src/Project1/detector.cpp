@@ -33,9 +33,9 @@ char** Detector::GetBinaryData()
 		{
 			Point2d point = CalcPosition(moduleSize, j, i);
 			res[i][j] = image.at<uchar>(point) ? 1 : 0;
-			// cout << (int)res[i][j];
+			//cout << (int)res[i][j];
 		}
-		// cout << '\n';
+		//cout << '\n';
 	}
 	return res;
 }
@@ -98,4 +98,5 @@ void Detector::Rectify(int moduleSize, int width, int height)
 
 	Mat transformMatrix = getPerspectiveTransform(src, dst);
 	warpPerspective(image, image, transformMatrix, Size(moduleSize * width, moduleSize * height));
+	imwrite(".//1.jpg", image);
 }
