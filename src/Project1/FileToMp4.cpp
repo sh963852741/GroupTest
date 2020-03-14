@@ -45,11 +45,11 @@ void FileToMp4::Trans(FILE* readFp, FILE* writeFp) {
 		fseek(readFp, 0, SEEK_END);
 		int size = ftell(readFp);
 		int current = 0;
-		char * buf = new char[100];
+		unsigned char * buf = new unsigned char[100];
 		int nRead;
 		fseek(readFp, 0, SEEK_SET);
 		while (current != size) {
-			nRead = fread(buf, sizeof(char), 18, readFp);
+			nRead = fread(buf, sizeof(unsigned char), 18, readFp);
 			current += nRead;
 			if (nRead > 0)
 			{
@@ -157,7 +157,7 @@ void FileToMp4::Draw_White_block(Mat img, int pt0, int pt1, int blockSize) {
 		FILLED, 1, 0);
 }
 void FileToMp4::Draw(int length, int width, int blockSize) {
-	char fill[] = "1110110100010001";//²¹ÆëÂë
+	unsigned char fill[] = "1110110100010001";//²¹ÆëÂë
 
 	FILE* fp = NULL;
 	errno_t err = 0;
@@ -175,7 +175,7 @@ void FileToMp4::Draw(int length, int width, int blockSize) {
 	int col = length / 10, row = width / 10;
 	int PicLength = col * row - 243;
 	//243 = 8*8*3 + 5*5 + 2+16 + 8
-	char lengthch[16];
+	unsigned char lengthch[16];
 
 	while (currentLoc < size) {
 		rectangle(QR_Code,
@@ -207,7 +207,7 @@ void FileToMp4::Draw(int length, int width, int blockSize) {
 		bool alert = true;
 		int i = 0, chRe = 0;
 		j = 26;
-		char ch;
+		unsigned char ch;
 		while (alert)
 		{
 			if (!feof(fp) && currentLoc % PicLength) ch = fgetc(fp);
@@ -271,6 +271,7 @@ void FileToMp4::Draw(int length, int width, int blockSize) {
 				}
 			}
 		}
+		threshold(QR_Code, QR_Code, 128, 255, THRESH_BINARY_INV);
 		string filename = "D:\\QR_Code\\QR_Code" + to_string(count) + ".jpg";
 		cv::imwrite(filename, QR_Code);
 		currentLoc++;

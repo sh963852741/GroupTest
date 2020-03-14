@@ -1,12 +1,17 @@
 #include "detector.h"
 
-Detector::Detector(Mat image, int blockRows, int blockCols, int moduleSize) :image(image), blockRows(blockRows), blockCols(blockCols),moduleSize(moduleSize)
+Detector::Detector(Mat srcImg, int blockRows, int blockCols, int moduleSize) :srcImg(srcImg), blockRows(blockRows), blockCols(blockCols),moduleSize(moduleSize)
 {
+	Mat imgGray;
+	cvtColor(srcImg, imgGray, COLOR_BGR2GRAY);
+	threshold(imgGray, image, 60, 255, THRESH_BINARY);
 	res = new char* [blockRows];
 	for (int i = 0; i < blockRows; ++i)
 	{
 		res[i] = new char[blockCols];
+		memset(res[i], 0, blockCols);
 	}
+	
 };
 bool Detector::Detect()
 {
@@ -31,11 +36,13 @@ char** Detector::GetBinaryData()
 	{
 		for (int j = 0; j < blockCols; ++j)
 		{
-			Point2d point = CalcPosition(moduleSize, j, i);
-			res[i][j] = image.at<uchar>(point) ? 1 : 0;
-			//cout << (int)res[i][j];
+			Point point = CalcPosition(moduleSize, j, i);
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[0] ? 0x01 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[1] ? 0x02 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[2] ? 0x04 : 0;
+			cout << (int)res[i][j];
 		}
-		//cout << '\n';
+		cout << '\n';
 	}
 	return res;
 }
@@ -55,9 +62,9 @@ void Detector::CalculateModuleSize()
 	overallEstModuleSize = (size1 + size2) / 2.0;
 }
 
-Point2d Detector::CalcPosition(int moduleSize, int x, int y)
+Point Detector::CalcPosition(int moduleSize, int x, int y)
 {
-	return Point2d(x * moduleSize + moduleSize / 2, y * moduleSize + moduleSize / 2);
+	return Point(x * moduleSize + moduleSize / 2, y * moduleSize + moduleSize / 2);
 }
 
 bool Detector::FindAlignmentInRegion(int estAlignmentX, int estAlignmentY, int allowanceFactor)
@@ -97,6 +104,6 @@ void Detector::Rectify(int moduleSize, int width, int height)
 	src.push_back(alignmentPattern.position);
 
 	Mat transformMatrix = getPerspectiveTransform(src, dst);
-	warpPerspective(image, image, transformMatrix, Size(moduleSize * width, moduleSize * height));
-	imwrite(".//1.jpg", image);
+	warpPerspective(srcImg, srcImg, transformMatrix, Size(moduleSize * width, moduleSize * height));
+	// imwrite(".//1.jpg", srcImg);
 }

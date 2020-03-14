@@ -18,6 +18,10 @@ bool FinderPatternFinder::FinderPatternSort2(FinderPattern a, FinderPattern b)
 {
 	return a.position.x < b.position.x;
 }
+bool FinderPatternFinder::FinderPatternSort3(FinderPattern a, FinderPattern b)
+{
+	return a.position.x < b.position.x;
+}
 
 
 void FinderPatternFinder::OrderBestPatterns(vector<FinderPattern> &patterns)
@@ -153,9 +157,17 @@ bool FinderPatternFinder::HandlePossibleCenter(int stateCount[], int i, int j)
 
 vector<FinderPattern> FinderPatternFinder::SelectBestPatterns()
 {
+	
 	if (possibleCenters.size() > 3) //ÊµÔÚÎÞ·¨ÅÐ¶Ï
 	{
-		std::sort(possibleCenters.begin(), possibleCenters.end(), FinderPatternSort2); //×¢ÒâÉý½µÐò
+		for (int i = possibleCenters.size() - 1; i >= 0; i--)
+		{
+			if ((possibleCenters[i].estimatedModuleSize > 10.2) 
+				|| (possibleCenters[i].position.y > 200 && possibleCenters[i].position.x > 200)
+				|| (possibleCenters[i].position.y > 200 && possibleCenters[i].position.y < 800))
+				possibleCenters.erase(possibleCenters.begin() + i);
+		}
+		std::sort(possibleCenters.begin() + 1, possibleCenters.end(), FinderPatternSort2); //×¢ÒâÉý½µÐò
 		for (int i = possibleCenters.size() - 2; i > 1; i--)
 		{
 			possibleCenters.erase(possibleCenters.begin() + i);
@@ -173,9 +185,10 @@ double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int ma
 	int maxJ = image.cols;
 	int stateCount[5];
 	memcpy(stateCount, crossCheckStateCount, sizeof(crossCheckStateCount));
+	uchar* rowPtr = image.ptr(centerI);
 
 	int j = startJ;
-	while (j >= 0 && image.at<uchar>(centerI,j))
+	while (j >= 0 && rowPtr[j])
 	{
 		stateCount[2]++;
 		j--;
@@ -184,7 +197,7 @@ double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int ma
 	{
 		return NAN;
 	}
-	while (j >= 0 && !image.at<uchar>(centerI, j) && stateCount[1] <= maxCount)
+	while (j >= 0 && !rowPtr[j] && stateCount[1] <= maxCount)
 	{
 		stateCount[1]++;
 		j--;
@@ -193,7 +206,7 @@ double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int ma
 	{
 		return NAN;
 	}
-	while (j >= 0 && image.at<uchar>(centerI, j) && stateCount[0] <= maxCount)
+	while (j >= 0 && rowPtr[j] && stateCount[0] <= maxCount)
 	{
 		stateCount[0]++;
 		j--;
@@ -204,7 +217,7 @@ double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int ma
 	}
 
 	j = startJ + 1;
-	while (j < maxJ && image.at<uchar>(centerI, j))
+	while (j < maxJ && rowPtr[j])
 	{
 		stateCount[2]++;
 		j++;
@@ -213,7 +226,7 @@ double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int ma
 	{
 		return NAN;
 	}
-	while (j < maxJ && !image.at<uchar>(centerI, j) && stateCount[3] < maxCount)
+	while (j < maxJ && !rowPtr[j] && stateCount[3] < maxCount)
 	{
 		stateCount[3]++;
 		j++;
@@ -222,7 +235,7 @@ double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int ma
 	{
 		return NAN;
 	}
-	while (j < maxJ && image.at<uchar>(centerI, j) && stateCount[4] < maxCount)
+	while (j < maxJ && rowPtr[j] && stateCount[4] < maxCount)
 	{
 		stateCount[4]++;
 		j++;
@@ -249,7 +262,7 @@ double FinderPatternFinder::CrossCheckVertical(int startI, int centerJ, int maxC
 	memcpy(stateCount, crossCheckStateCount, sizeof(crossCheckStateCount));
 
 	int i = startI;
-	while (i >= 0 && image.at<uchar>(i,centerJ))
+	while (i >= 0 && image.ptr<uchar>(i)[centerJ])
 	{
 		stateCount[2]++;
 		i--;
@@ -258,7 +271,7 @@ double FinderPatternFinder::CrossCheckVertical(int startI, int centerJ, int maxC
 	{
 		return NAN;
 	}
-	while (i >= 0 && !image.at<uchar>(i, centerJ) && stateCount[1] <= maxCount)
+	while (i >= 0 && !image.ptr<uchar>(i)[centerJ] && stateCount[1] <= maxCount)
 	{
 		stateCount[1]++;
 		i--;
@@ -268,7 +281,7 @@ double FinderPatternFinder::CrossCheckVertical(int startI, int centerJ, int maxC
 	{
 		return NAN;
 	}
-	while (i >= 0 && image.at<uchar>(i, centerJ) && stateCount[0] <= maxCount)
+	while (i >= 0 && image.ptr<uchar>(i)[centerJ] && stateCount[0] <= maxCount)
 	{
 		stateCount[0]++;
 		i--;
@@ -279,7 +292,7 @@ double FinderPatternFinder::CrossCheckVertical(int startI, int centerJ, int maxC
 	}
 
 	i = startI + 1;
-	while (i < maxI && image.at<uchar>(i, centerJ))
+	while (i < maxI && image.ptr<uchar>(i)[centerJ])
 	{
 		stateCount[2]++;
 		i++;
@@ -288,7 +301,7 @@ double FinderPatternFinder::CrossCheckVertical(int startI, int centerJ, int maxC
 	{
 		return NAN;
 	}
-	while (i < maxI && !image.at<uchar>(i, centerJ) && stateCount[3] < maxCount)
+	while (i < maxI && !image.ptr<uchar>(i)[centerJ] && stateCount[3] < maxCount)
 	{
 		stateCount[3]++;
 		i++;
@@ -297,7 +310,7 @@ double FinderPatternFinder::CrossCheckVertical(int startI, int centerJ, int maxC
 	{
 		return NAN;
 	}
-	while (i < maxI && image.at<uchar>(i, centerJ) && stateCount[4] < maxCount)
+	while (i < maxI && image.ptr<uchar>(i)[centerJ] && stateCount[4] < maxCount)
 	{
 		stateCount[4]++;
 		i++;
@@ -357,6 +370,7 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 	int stateCount[5] = { 0,0,0,0,0 };
 	for (int i = iSkip - 1; i < maxI; i += iSkip)
 	{
+		uchar* rowPtr = image.ptr(i);
 		stateCount[0] = 0;
 		stateCount[1] = 0;
 		stateCount[2] = 0;
@@ -365,7 +379,7 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 		int currentState = 0;
 		for (int j = 0; j < maxJ; j++)
 		{
-			if (image.at<uchar>(i, j))
+			if (rowPtr[j])
 			{
 				if ((currentState & 1) == 1)
 				{
@@ -397,6 +411,12 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 										i += rowSkip - stateCount[2] - iSkip;
 										j = maxJ - 1;
 									}
+									stateCount[0] = stateCount[4];
+									stateCount[1] = 0;
+									stateCount[2] = 0;
+									stateCount[3] = 0;
+									stateCount[4] = 0;
+									currentState = 1;
 								}
 							}
 							else
@@ -407,6 +427,11 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 								stateCount[3] = 0;
 								stateCount[4] = 0;
 								currentState = 1;
+								/*do
+								{
+									j++;
+								} while (j < maxJ && !image.at<uchar>(i,j));
+								j--;*/
 							}
 						}
 						else

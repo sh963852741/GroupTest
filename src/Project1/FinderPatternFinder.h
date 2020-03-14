@@ -49,6 +49,7 @@ private:
 
 	static bool FinderPatternSort1(FinderPattern center1, FinderPattern center2);
 	static bool FinderPatternSort2(FinderPattern a, FinderPattern b);
+	static bool FinderPatternSort3(FinderPattern a, FinderPattern b);
 	void OrderBestPatterns(vector<FinderPattern> &patterns);
 	bool FoundPatternCross(int stateCount[]);
 	double CenterFromEnd(int stateCount[], double end);

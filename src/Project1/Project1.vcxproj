@@ -147,7 +147,7 @@
     <ClCompile Include="AlignPatternFinder.cpp" />
     <ClCompile Include="DataTranslation.cpp" />
     <ClCompile Include="Detector.cpp" />
-    <ClCompile Include="FileToPicture.cpp" />
+    <ClCompile Include="FileToMp4.cpp" />
     <ClCompile Include="FileToVedio.cpp" />
     <ClCompile Include="FinderPatternFinder.cpp" />
     <ClCompile Include="slicer.cpp" />
@@ -157,10 +157,13 @@
     <ClInclude Include="AlignPatternFinder.h" />
     <ClInclude Include="DataTranslation.h" />
     <ClInclude Include="Detector.h" />
-    <ClInclude Include="FileToPicture.h" />
+    <ClInclude Include="FileToMp4.h" />
     <ClInclude Include="FileToVedio.h" />
     <ClInclude Include="FinderPatternFinder.h" />
     <ClInclude Include="slicer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

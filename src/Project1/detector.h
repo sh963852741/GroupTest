@@ -11,6 +11,7 @@ public:
 	~Detector();
 private:
 	Mat image;
+	Mat srcImg;
 	FinderPatternFinder finder1;
 	AlignmentPatternFinder alignmentFinder;
 	FinderPatternInfo finderPatternInfo;
@@ -22,7 +23,7 @@ private:
 	char** res;
 
 	void CalculateModuleSize();
-	Point2d CalcPosition(int moduleSize, int x, int y);
+	Point CalcPosition(int moduleSize, int x, int y);
 	bool FindAlignmentInRegion(int estAlignmentX, int estAlignmentY, int allowanceFactor);
 	void Rectify(int moduleSize, int width, int height);
 	
