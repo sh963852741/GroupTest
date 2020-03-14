@@ -3,11 +3,19 @@
 int FileToVedio::DrawHead(int height, int width, int modusize)
 {
 	//在图片中绘制奇偶校验位的像素块
-	if (currentPic % 2 == 0)  PositionOfPic(height / 10, width / 10, 1);
-	else  PositionOfPic(height / 10, width / 10, 2);
+	if (currentPic % 2 == 0)
+	{
+		PositionOfPic(height / 10, width / 10, 1);
+		PositionOfPic(height / 10, width / 10, 2);
+	}
+	else
+	{
+		PositionOfPic(height / 10, width / 10, 2);
+		PositionOfPic(height / 10, width / 10, 1);
+	}
 
 	// 这里向图片写数据的头部-图片数据对应的总像素块个数
-	int DataBlockNum = width / 10 * height / 10 - 230 - 2;	//默认总像素块个数为width/10*height/10-64*3-25-4-9-2,4表示结束码，9表示头部，2表示舍弃的半个字节数
+	int DataBlockNum = width / 10 * height / 10 - 230 - 1;	//默认总像素块个数为width/10*height/10-64*3-25-4-9-2,4表示结束码，9表示头部，2表示舍弃的半个字节数
 	if (data.size() * 4 - currentDataIndex * 4 < DataBlockNum) {		//最后一张图的数据像素块总数
 		DataBlockNum = (data.size() - currentDataIndex) * 4;
 	}

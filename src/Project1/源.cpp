@@ -17,16 +17,16 @@ int main()
 	/*FileToMp4 a;
 	a.MakePictureSequence();*/
 	int start = getTickCount();   
-	return;
+
 	Mat imgGray, res;
 	Mat img;
-	/*VedioSlicer DT(R"(C:\Users\yuyua\Desktop\录制视频.mp4)");*/
+	VedioSlicer DT(R"(C:\Users\yuyua\Desktop\录制视频.mp4)");
 	int i = 0;
 	while (1)
 	{
 		// cout << ++i;
-		/*img = DT.GetNextFrame();*/
-		img = imread(".//1.jpg");
+		img = DT.GetNextFrame();
+		// img = imread(".//1.jpg");
 		if (img.empty())
 		{
 			break;

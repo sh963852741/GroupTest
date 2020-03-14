@@ -4,7 +4,7 @@ Detector::Detector(Mat srcImg, int blockRows, int blockCols, int moduleSize) :sr
 {
 	Mat imgGray;
 	cvtColor(srcImg, imgGray, COLOR_BGR2GRAY);
-	threshold(imgGray, image, 60, 255, THRESH_BINARY);
+	threshold(imgGray, image, 128, 255, THRESH_BINARY_INV);
 	res = new char* [blockRows];
 	for (int i = 0; i < blockRows; ++i)
 	{
@@ -37,9 +37,9 @@ char** Detector::GetBinaryData()
 		for (int j = 0; j < blockCols; ++j)
 		{
 			Point point = CalcPosition(moduleSize, j, i);
-			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[0] ? 0x01 : 0;
-			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[1] ? 0x02 : 0;
-			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[2] ? 0x04 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[0] > 60 ? 0x01 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[1] > 60 ? 0x02 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[2] > 60 ? 0x04 : 0;
 			cout << (int)res[i][j];
 		}
 		cout << '\n';
