@@ -15,7 +15,7 @@ int FileToVedio::DrawHead(int height, int width, int modusize)
 	}
 
 	// 这里向图片写数据的头部-图片数据对应的总像素块个数
-	int DataBlockNum = width / 10 * height / 10 - 230 - 1;	//默认总像素块个数为width/10*height/10-64*3-25-4-9-2,4表示结束码，9表示头部，2表示舍弃的半个字节数
+	int DataBlockNum = width / 10 * height / 10 - 231 - 1;	//默认总像素块个数为width/10*height/10-64*3-25-4-10-1,4表示结束码，10表示头部，1表示舍弃
 	if (data.size() * 4 - currentDataIndex * 4 < DataBlockNum) {		//最后一张图的数据像素块总数
 		DataBlockNum = (data.size() - currentDataIndex) * 4;
 	}
@@ -293,10 +293,10 @@ FileToVedio::FileToVedio(const char* filePath)
 	currentPic = 0;		//生成的图片数的初始值为0
 	currentDataIndex = 0;	//读取数据个数的初始值为0
 
-	//unsigned char temp = 252;
-	//for (int i = 0; i < 10000; ++i) {
-	//	data.push_back(temp);
-	//}
+	/*unsigned char temp = 252;
+	for (int i = 0; i < 10200; ++i) {
+		data.push_back(temp);
+	}*/
 
 	//颜色字典的初始值
 	value_of_color["black"][0] = 0;
