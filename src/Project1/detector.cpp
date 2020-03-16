@@ -4,12 +4,13 @@ Detector::Detector(Mat srcImg, int blockRows, int blockCols, int moduleSize) :sr
 {
 	Mat imgGray;
 	cvtColor(srcImg, imgGray, COLOR_BGR2GRAY);
-	threshold(imgGray, image, 128, 255, THRESH_BINARY_INV);
+	threshold(imgGray, image, 100, 255, THRESH_BINARY);
+	// imwrite(".//1.jpg", image);
 	res = new char* [blockRows];
 	for (int i = 0; i < blockRows; ++i)
 	{
 		res[i] = new char[blockCols];
-		memset(res[i], 0, blockCols);
+		// memset(res[i], 0, blockCols);
 	}
 	
 };
@@ -36,13 +37,14 @@ char** Detector::GetBinaryData()
 	{
 		for (int j = 0; j < blockCols; ++j)
 		{
-			Point point = CalcPosition(moduleSize, j, i);
-			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[0] > 60 ? 0x01 : 0;
-			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[1] > 60 ? 0x02 : 0;
-			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[2] > 60 ? 0x04 : 0;
-			cout << (int)res[i][j];
+			Point point = CalcPosition(10, j, i); //强制设置为10
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[0] > 160 ? 0x01 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[1] > 140 ? 0x02 : 0;
+			res[i][j] |= srcImg.ptr<uchar>(point.y, point.x)[2] > 90 ? 0x04 : 0;
+			/*cout << (int)((res[i][j] & 7)^7);*/
+			// cout << (int)res[i][j];
 		}
-		cout << '\n';
+		// cout << '\n';
 	}
 	return res;
 }
@@ -105,5 +107,8 @@ void Detector::Rectify(int moduleSize, int width, int height)
 
 	Mat transformMatrix = getPerspectiveTransform(src, dst);
 	warpPerspective(srcImg, srcImg, transformMatrix, Size(moduleSize * width, moduleSize * height));
-	// imwrite(".//1.jpg", srcImg);
+	char addr[50];
+	static int i = 0;
+	sprintf_s(addr, "D:\\QR_Code\\QR_Code%d_trans.png", ++i);
+	imwrite("addr", srcImg);
 }

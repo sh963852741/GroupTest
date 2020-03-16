@@ -114,14 +114,15 @@ void FileToVedio::ReadToMemory()
 		for (int j = 0; j < 9; j++)
 		{
 			fileIn.read((char*)&checksum, 2);
-			accumulate += checksum;
+			accumulate += (0x00FF & checksum) << 8;
+			accumulate += checksum >> 8;
 			data.push_back(checksum);
 			data.push_back(checksum >> 8);
 		}
 		unsigned short carry = accumulate >> 16;
 		checksum = ~(accumulate + carry);
-		data.push_back(checksum);
 		data.push_back(checksum >> 8);
+		data.push_back(checksum);
 	}
 
 	if (fileIn.eof())return;
@@ -144,13 +145,13 @@ void FileToVedio::ReadToMemory()
 	unsigned short checksum = 0;
 	for (int i = data.size() - 20; i < data.size(); i += 2)
 	{
-		accumulate += data[i];
-		accumulate += data[i + 1] << 8;
+		accumulate += data[i] << 8;
+		accumulate += data[i + 1];
 	}
 	unsigned short carry = accumulate >> 16;
 	checksum = ~(accumulate + carry);
-	data.push_back(checksum);
 	data.push_back(checksum >> 8);
+	data.push_back(checksum);
 
 	/*输出所有数据（debug）*/
 	/*for (int i = 0; i < data.size(); ++i) {
@@ -209,8 +210,12 @@ void FileToVedio::DrawImage(int height, int width, int modusize)
 				}
 			}
 		}
-		cout << currentPic++;
-		vedio << img;
+		// bitwise_not(img, img);
+		/*++currentPic;*/
+		char addr[50];
+		sprintf_s(addr, "D:\\QR_Code\\QR_Code%d.png", currentPic++);
+		imwrite(addr, img);
+		//vedio << img;
 	}
 	vedio.release();
 }
@@ -233,54 +238,54 @@ void FileToVedio::InitialFormat(int height, int width, int modusize)//添加width,
 {
 	//生成图像并设置背景色为黑色
 	img.create(height, width, CV_8UC3);
-	img.setTo(Scalar(0, 0, 0));
+	img.setTo(Scalar(255, 255, 255));
 
 	currentRow = 0;
 	currentCol = 0;
 
 	for (int i = 1; i < 6; i++) {
 		//左上方框
-		DrawBlock(1, i, value_of_color["white"]);
-		DrawBlock(i, 1, value_of_color["white"]);
-		DrawBlock(5, i, value_of_color["white"]);
-		DrawBlock(i, 5, value_of_color["white"]);
+		DrawBlock(1, i, value_of_color["black"]);
+		DrawBlock(i, 1, value_of_color["black"]);
+		DrawBlock(5, i, value_of_color["black"]);
+		DrawBlock(i, 5, value_of_color["black"]);
 		//右上方框
-		DrawBlock(1, i + width / 10 - 7, value_of_color["white"]);
-		DrawBlock(i, 1 + width / 10 - 7, value_of_color["white"]);
-		DrawBlock(5, i + width / 10 - 7, value_of_color["white"]);
-		DrawBlock(i, width / 10 - 2, value_of_color["white"]);
+		DrawBlock(1, i + width / 10 - 7, value_of_color["black"]);
+		DrawBlock(i, 1 + width / 10 - 7, value_of_color["black"]);
+		DrawBlock(5, i + width / 10 - 7, value_of_color["black"]);
+		DrawBlock(i, width / 10 - 2, value_of_color["black"]);
 		//左下方框
-		DrawBlock(height / 10 - 6, i, value_of_color["white"]);
-		DrawBlock(i + height / 10 - 7, 1, value_of_color["white"]);
-		DrawBlock(height / 10 - 2, i, value_of_color["white"]);
-		DrawBlock(i + height / 10 - 7, 5, value_of_color["white"]);
+		DrawBlock(height / 10 - 6, i, value_of_color["black"]);
+		DrawBlock(i + height / 10 - 7, 1, value_of_color["black"]);
+		DrawBlock(height / 10 - 2, i, value_of_color["black"]);
+		DrawBlock(i + height / 10 - 7, 5, value_of_color["black"]);
 	}
 	for (int i = 0; i < 8; i++) {
 		//左上两边
-		DrawBlock(i, 7, value_of_color["white"]);
-		DrawBlock(7, i, value_of_color["white"]);
+		DrawBlock(i, 7, value_of_color["black"]);
+		DrawBlock(7, i, value_of_color["black"]);
 		//右上两边
-		DrawBlock(i, width / 10 - 8, value_of_color["white"]);
-		DrawBlock(7, i + width / 10 - 8, value_of_color["white"]);
+		DrawBlock(i, width / 10 - 8, value_of_color["black"]);
+		DrawBlock(7, i + width / 10 - 8, value_of_color["black"]);
 		//左下两边
-		DrawBlock(i + height / 10 - 8, 7, value_of_color["white"]);
-		DrawBlock(height / 10 - 8, i, value_of_color["white"]);
+		DrawBlock(i + height / 10 - 8, 7, value_of_color["black"]);
+		DrawBlock(height / 10 - 8, i, value_of_color["black"]);
 	}
 
 	for (int i = 0; i < 3; i++) {
 		//右下对齐点
-		DrawBlock(height / 10 - 5, width / 10 - 5 + i, value_of_color["white"]);
-		DrawBlock(height / 10 - 3, width / 10 - 5 + i, value_of_color["white"]);
-		DrawBlock(height / 10 - 5 + i, width / 10 - 5, value_of_color["white"]);
-		DrawBlock(height / 10 - 5 + i, width / 10 - 3, value_of_color["white"]);
+		DrawBlock(height / 10 - 5, width / 10 - 5 + i, value_of_color["black"]);
+		DrawBlock(height / 10 - 3, width / 10 - 5 + i, value_of_color["black"]);
+		DrawBlock(height / 10 - 5 + i, width / 10 - 5, value_of_color["black"]);
+		DrawBlock(height / 10 - 5 + i, width / 10 - 3, value_of_color["black"]);
 	}
 }
 
 void FileToVedio::GenerateVedio(const char* vedioPath, int width, int height, int modusize)
 {
 	// 应当初始化 vedio
-	int fourcc = vedio.fourcc('m', 'p', '4', 'v');
-	vedio.open(vedioPath, fourcc, 1, Size(1920, 1080), true);
+	int fourcc = vedio.fourcc('h', 'v', 'c', '1');
+	vedio.open(vedioPath, fourcc, 15, Size(1920, 1080), true);
 	ReadToMemory();
 	DrawImage(width, height, modusize);
 	// 把画出的图像放入vedio

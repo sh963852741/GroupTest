@@ -11,8 +11,8 @@ using namespace cv; //opencv 的命名空间
 
 int main()
 {
-	FileToVedio a(R"(D:\test.txt)");
-	a.GenerateVedio(R"(D:\QR_Code\QR_Code.mp4)", 1080, 1920, 10);
+	/*FileToVedio a(R"(D:\test.txt)");
+	a.GenerateVedio(R"(D:\QR_Code\QR_Code.mp4)", 1080, 1920, 15);*/
 	
 	/*FileToMp4 a;
 	a.MakePictureSequence();*/
@@ -24,9 +24,9 @@ int main()
 	int i = 0;
 	while (1)
 	{
-		// cout << ++i;
+		cout << ++i;
 		img = DT.GetNextFrame();
-		// img = imread(".//1.jpg");
+		//img = imread(R"(D:\QR_Code\QR_Code1.png)");
 		if (img.empty())
 		{
 			break;

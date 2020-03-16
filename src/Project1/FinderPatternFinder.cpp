@@ -405,7 +405,7 @@ bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finder
 								}
 								else
 								{
-									int rowSkip = FindRowSkip() / 16 * 9;
+									int rowSkip = FindRowSkip();
 									if (rowSkip > stateCount[2])
 									{
 										i += rowSkip - stateCount[2] - iSkip;
