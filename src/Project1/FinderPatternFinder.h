@@ -29,7 +29,7 @@ struct FinderPatternInfo //结构体，用来存储FinderPattern的信息
 	FinderPattern bottomLeft;
 	FinderPattern topLeft;
 	FinderPattern topRight;
-	FinderPatternInfo(vector<FinderPattern>patternCenters)
+	FinderPatternInfo(vector<FinderPattern>&patternCenters)
 		:bottomLeft(patternCenters[0]), topLeft(patternCenters[1]), topRight(patternCenters[2]) {};
 	FinderPatternInfo() {};
 };
@@ -60,6 +60,6 @@ private:
 	double CrossCheckVertical(int startI, int centerJ, int maxCount, int originalStateCountTotal);
 	int FindRowSkip();
 public:
-	bool FindFinderPattern(Mat image, FinderPatternInfo& finderPatternInfo); //输入二值化后的图像，返回FinderPattern的信息
+	bool FindFinderPattern(Mat& image, FinderPatternInfo& finderPatternInfo); //输入二值化后的图像，返回FinderPattern的信息
 	double static average;
 };

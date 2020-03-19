@@ -24,6 +24,7 @@ private:
 	int currentRow; // 用于在生成图片时指示当前读取行的位置
 	int currentCol;//用于在生成图片时指示当前读取列的位置
 	bool currentPrity = false;
+	void Check_CalaCRC8(unsigned char* pdat, unsigned char len);
 	//void DrawHead(int width, int height, int modusize);	
 	//void ReadToMemory();
 	//void DrawImage(int width, int height, int modusize);

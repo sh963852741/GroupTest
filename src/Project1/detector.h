@@ -5,9 +5,10 @@
 class Detector
 {
 public:
-	Detector(Mat image, int blockRows,int blockCols, int moduleSize);
+	Detector(Mat& image, int blockRows,int blockCols, int moduleSize);
 	bool Detect();
 	char** GetBinaryData();
+	void picCount(char data[]);
 	~Detector();
 private:
 	Mat image;

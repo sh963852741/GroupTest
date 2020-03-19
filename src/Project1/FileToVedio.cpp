@@ -1,4 +1,5 @@
 #include "FileToVedio.h"
+#include <bitset>
 
 int FileToVedio::DrawHead(int height, int width, int modusize)
 {
@@ -107,7 +108,69 @@ void FileToVedio::ReadToMemory()
 	fileIn.seekg(0, ios::end);
 	int fileLength = fileIn.tellg(); // 文件长度
 	fileIn.seekg(0, ios::beg);
-	for (int i = 0; i < (int)(fileLength / 18); i++) // 每循环一次计算一次校验和
+
+	//bitset<128> checkedData;
+	unsigned char ch[11];
+
+	for (int i = 0; i < fileLength / 10; ++i)
+	{
+		fileIn.read((char*)ch, 10);
+		Check_CalaCRC8(ch, 10);
+		for (int j = 0; j < 11; ++j)
+		{
+			data.push_back(ch[j]);
+		}
+	}
+
+
+	//for (int k = 0; k < fileLength / 10; ++k)
+	//{
+	//	/*生成一组汉明码*/
+	//	fileIn.read((char*)ch, 15);
+	//	for (int i = 1, skip = 0; i < 128; i++)
+	//	{
+	//		if (i == 1 || i == 2 || i == 4 || i == 8 || i == 16 || i == 32 || i == 64)
+	//		{
+	//			++skip;
+	//			continue;
+	//		}
+	//		checkedData[i] = (ch[(i - skip - 1) / 8] >> (7 - (i - skip - 1) % 8)) & 1;
+	//	}
+
+	//	/*在汉明码的相应位置填上校验值*/
+	//	bool checkPosition[7];
+	//	memset(checkPosition, 0, 7);
+	//	for (int i = 1; i < 128; ++i)
+	//	{
+	//		if (i & 1)checkPosition[0] ^= checkedData[i];
+	//		if (i & 2)checkPosition[1] ^= checkedData[i];
+	//		if (i & 4)checkPosition[2] ^= checkedData[i];
+	//		if (i & 8)checkPosition[3] ^= checkedData[i];
+	//		if (i & 16)checkPosition[4] ^= checkedData[i];
+	//		if (i & 32)checkPosition[5] ^= checkedData[i];
+	//		if (i & 64)checkPosition[6] ^= checkedData[i];
+	//	}
+
+	//	for (int i = 0; i < 7; ++i)
+	//	{
+	//		checkedData[pow(2, i)] = checkPosition[i];
+	//	}
+
+	//	/*把生成的汉明码写回到文件*/
+	//	for (int i = 0; i < 16; ++i)
+	//	{
+	//		unsigned char ch = 0;
+	//		for (int j = 0; j < 8; ++j)
+	//		{
+	//			ch += checkedData[i * 8 + j] << (7 - j);
+	//		}
+	//		data.push_back(ch);
+	//	}
+	//	checkedData.reset();
+	//}
+
+
+	/*for (int i = 0; i < (int)(fileLength / 18); i++)
 	{
 		unsigned int accumulate = 0;
 		unsigned short checksum = 0;
@@ -123,11 +186,11 @@ void FileToVedio::ReadToMemory()
 		checksum = ~(accumulate + carry);
 		data.push_back(checksum >> 8);
 		data.push_back(checksum);
-	}
+	}*/
 
 	if (fileIn.eof())return;
 
-	/*当剩余长度不足18字节*/
+	/*当剩余长度不足15字节*/
 	int i = 0; // 剩余长度
 	while (!fileIn.eof())
 	{
@@ -136,22 +199,22 @@ void FileToVedio::ReadToMemory()
 		data.push_back(temp);
 		++i;
 	}
-	while (i < 18) // 剩余部分补0
-	{
-		data.push_back(0);
-		++i;
-	}
-	unsigned int accumulate = 0;
-	unsigned short checksum = 0;
-	for (int i = data.size() - 20; i < data.size(); i += 2)
-	{
-		accumulate += data[i] << 8;
-		accumulate += data[i + 1];
-	}
-	unsigned short carry = accumulate >> 16;
-	checksum = ~(accumulate + carry);
-	data.push_back(checksum >> 8);
-	data.push_back(checksum);
+	//while (i < 18) // 剩余部分补0
+	//{
+	//	data.push_back(0);
+	//	++i;
+	//}
+	//unsigned int accumulate = 0;
+	//unsigned short checksum = 0;
+	//for (int i = data.size() - 20; i < data.size(); i += 2)
+	//{
+	//	accumulate += data[i] << 8;
+	//	accumulate += data[i + 1];
+	//}
+	//unsigned short carry = accumulate >> 16;
+	//checksum = ~(accumulate + carry);
+	//data.push_back(checksum >> 8);
+	//data.push_back(checksum);
 
 	/*输出所有数据（debug）*/
 	/*for (int i = 0; i < data.size(); ++i) {
@@ -211,16 +274,38 @@ void FileToVedio::DrawImage(int height, int width, int modusize)
 			}
 		}
 		// bitwise_not(img, img);
-		/*++currentPic;*/
-		char addr[50];
-		sprintf_s(addr, "D:\\QR_Code\\QR_Code%d.png", currentPic++);
-		imwrite(addr, img);
-		//vedio << img;
+		++currentPic;
+		/*char addr[50];
+		sprintf_s(addr, "D:\\QR_Code\\QR_Code%03d.png", currentPic++);
+		imwrite(addr, img);*/
+		vedio << img;
 	}
 	vedio.release();
 }
 
 
+
+void FileToVedio::Check_CalaCRC8(unsigned char* pdat, unsigned char len)
+{
+	unsigned char crc = 0x00;
+	for (int i = 0; i < len; i++)
+	{
+		crc ^= ((*pdat++) & 0xFF); // 先将取当前指针指向的值，然后把指针+1
+		for (int j = 8; j > 0; j--)
+		{
+			if (crc & 0x80)
+			{
+				crc <<= 1;
+				crc ^= 0x31; //x^8+x^5+x^4+1
+			}
+			else
+			{
+				crc <<= 1;
+			}
+		}
+	}
+	*pdat = crc & 0xFF;
+}
 
 void FileToVedio::DrawBlock(int x, int y, int color[]) //
 {
@@ -284,8 +369,8 @@ void FileToVedio::InitialFormat(int height, int width, int modusize)//添加width,
 void FileToVedio::GenerateVedio(const char* vedioPath, int width, int height, int modusize)
 {
 	// 应当初始化 vedio
-	int fourcc = vedio.fourcc('h', 'v', 'c', '1');
-	vedio.open(vedioPath, fourcc, 15, Size(1920, 1080), true);
+	int fourcc = vedio.fourcc('M', 'J', 'P', 'G');
+	vedio.open(vedioPath, fourcc, 20, Size(1920, 1080), true);
 	ReadToMemory();
 	DrawImage(width, height, modusize);
 	// 把画出的图像放入vedio

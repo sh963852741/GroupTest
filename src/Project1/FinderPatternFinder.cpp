@@ -162,22 +162,14 @@ vector<FinderPattern> FinderPatternFinder::SelectBestPatterns()
 	{
 		for (int i = possibleCenters.size() - 1; i >= 0; i--)
 		{
-			if ((possibleCenters[i].estimatedModuleSize > 10.2) 
-				|| (possibleCenters[i].position.y > 200 && possibleCenters[i].position.x > 200)
+			if (possibleCenters[i].estimatedModuleSize > 10.2 || possibleCenters[i].estimatedModuleSize < 6
+				|| (possibleCenters[i].position.y > 200 && possibleCenters[i].position.x > 250)
 				|| (possibleCenters[i].position.y > 200 && possibleCenters[i].position.y < 800))
 				possibleCenters.erase(possibleCenters.begin() + i);
 		}
 		std::sort(possibleCenters.begin() + 1, possibleCenters.end(), FinderPatternSort2); //×¢ÒâÉý½µÐò
-		for (int i = possibleCenters.size() - 2; i > 1; i--)
-		{
-			possibleCenters.erase(possibleCenters.begin() + i);
-		}
 	}
-	vector<FinderPattern>temp(3);
-	temp.at(0) = (possibleCenters[0]);
-	temp.at(1) = (possibleCenters[1]);
-	temp.at(2) = (possibleCenters[2]);
-	return temp;
+	return vector<FinderPattern>{ possibleCenters[0], possibleCenters[possibleCenters.size() - 1], possibleCenters[1] };
 }
 
 double FinderPatternFinder::CrossCheckHorizontal(int startJ, int centerI, int maxCount, int originalStateCountTotal)
@@ -356,7 +348,7 @@ int FinderPatternFinder::FindRowSkip()
 	return 0;
 }
 
-bool FinderPatternFinder::FindFinderPattern(Mat image, FinderPatternInfo& finderPatternInfo)
+bool FinderPatternFinder::FindFinderPattern(Mat& image, FinderPatternInfo& finderPatternInfo)
 {
 	bool tryHarder = false;
 	this->image = image;
